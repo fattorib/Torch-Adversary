@@ -34,7 +34,7 @@ testloader = DataLoader(test_data, batch_size=64, shuffle=True)
 train_on_gpu = torch.cuda.is_available()
 
 # Whether to retrain model or use precomputed params
-train_model = False
+train_model = True
 
 
 if(train_on_gpu):
@@ -100,15 +100,16 @@ if train_model == True:
 
             # Pass tensors to GPU
             images, labels = images.cuda(), labels.cuda()
+            print(labels.shape)
 
             optimizer.zero_grad()
 
             output = model(images)
-
             loss = criterion(output, labels)
             running_loss += loss.item()
 
             loss.backward()
+            # print(images.grad)
             optimizer.step()
 
         if e % 2 == 0:
@@ -141,4 +142,4 @@ if train_model == True:
             model.train()
 
     # Saving model parameters
-    torch.save(model.state_dict(), 'Trained_model.pth')
+    # torch.save(model.state_dict(), 'Trained_model.pth')
