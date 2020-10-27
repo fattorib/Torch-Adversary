@@ -26,7 +26,7 @@ test_data = QMNIST(root='./QMNISTdata', train=False,
 
 # Define dataloaders
 trainloader = DataLoader(train_data, batch_size=64, shuffle=True)
-testloader = DataLoader(test_data, batch_size=64, shuffle=True)
+testloader = DataLoader(test_data, batch_size=10, shuffle=True)
 
 
 # Define network
@@ -97,6 +97,12 @@ class_names = ['Zero', 'One', 'Two',
 
 images, labels = next(iter(testloader))
 
+print('Actual Label:', labels[0])
+
+noise_image = torch.rand(10, 1, 28, 28)
+
+images = images + 0*noise_image
+
 image = images.cuda()
 
 logpred = model.forward(image)
@@ -123,8 +129,7 @@ probability = 100*max(probabilities[0])
 
 plt.title('{} \n Probability {:.2f} %'.format(class_name, probability))
 
-ax1.imshow(images[0].permute(1, 2, 0), cmap='bone')
-
+ax1.imshow(images[0].permute(1, 2, 0), cmap='jet')
 
 plt.sca(ax2)
 plt.xticks(np.arange(10), ['Zero', 'One', 'Two',
