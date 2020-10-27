@@ -3,5 +3,5 @@ Experimenting with Adversarial attacks as well as modifying training to account 
 
 ## To do:
 - Get model and train it (COMPLETED)
-- Untargeted attacks
-- Targeted attacks
+- Untargeted attacks (DOING)
+- Targeted attacks (TO DO)
