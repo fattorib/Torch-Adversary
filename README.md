@@ -6,3 +6,4 @@ Experimenting with Adversarial attacks as well as modifying training to account 
 
 ## To do:
 - Targeted attack with FGSM
+- Fix weird CUDA issue with tracking gradients on inputs
