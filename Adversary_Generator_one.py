@@ -16,6 +16,11 @@ transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
+test_data = QMNIST(root='./QMNISTdata', train=False,
+                   download=False, transform=transform)
+
+# Define dataloaders
+testloader = DataLoader(test_data, batch_size=1, shuffle=True)
 
 # Define network
 # Checking whether we have GPU
@@ -74,7 +79,7 @@ images = torch.rand(1, 1, 28, 28)
 images.requires_grad = True
 
 
-label = torch.tensor(4)
+label = torch.tensor(3)
 
 criterion = nn.NLLLoss()
 
@@ -85,30 +90,29 @@ model.load_state_dict(state_dict)
 model
 model.eval()
 
-optimizer = torch.optim.SGD([images], lr=0.1)
-epochs = 100
+optimizer = torch.optim.SGD([images], lr=0.5)
+epochs = 1000
 # Pass tensors to GPU. Weird issue with gradient tracking when passing from cpu to gpu...
+for e in range(1, epochs+1):
 
-if train_model == True:
-    for e in range(1, epochs+1):
+    # images, labels = images.cuda(), label.cuda()
+    # images.requires_grad = True
+    running_loss = 0
 
-        # images, labels = images.cuda(), label.cuda()
-        # images.requires_grad = True
-        running_loss = 0
+    optimizer.zero_grad()
 
-        optimizer.zero_grad()
+    output = model(images)
 
-        output = model(images)
+    loss = criterion(output, label.view(1))
 
-        loss = criterion(output, label.view(1))
+    running_loss += loss.item()
 
-        running_loss += loss.item()
+    loss.backward()
 
-        loss.backward()
-        optimizer.step()
+    optimizer.step()
 
-        if e % 10 == 0:
-            print('Training Loss:', running_loss)
+    if e % 1000 == 0:
+        print('Loss:', running_loss)
 
 
 model.cuda()
@@ -142,7 +146,7 @@ probability = 100*max(probabilities[0])
 
 plt.title('{} \n Probability {:.2f} %'.format(class_name, probability))
 
-ax1.imshow(images[0].cpu().detach().permute(1, 2, 0), cmap='bone')
+ax1.imshow(image[0].cpu().detach().permute(1, 2, 0), cmap='bone')
 
 plt.sca(ax2)
 plt.xticks(np.arange(10), ['Zero', 'One', 'Two',
