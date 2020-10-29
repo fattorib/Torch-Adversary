@@ -136,6 +136,6 @@ def create_adversary(X, Y_target, lr, epochs):
 
 
 label_test = torch.tensor(2)
-X_adv = create_adversary(image_test, label_test, 0.0005, 5000)
+X_adv = create_adversary(image_test, label_test, 0.0001, 5000)
 
 predict_class(X_adv, label_test, model)
