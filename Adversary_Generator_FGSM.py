@@ -108,6 +108,34 @@ def create_FGSM(X, Y, epsilon):
     return torch.clamp(X_adv,  0, 1), epsilon*(X.grad.sign())
 
 
-X_adv, noise_image = create_FGSM(image_test, label_test, 0.3)
+def create_adversary(X, Y_target, lr, epochs):
+    X.requires_grad = True
+    optimizer = torch.optim.SGD([X], lr=lr)
+# Pass tensors to GPU. Weird issue with gradient tracking when passing from cpu to gpu...
+    for e in range(1, epochs+1):
+
+        # images, labels = images.cuda(), label.cuda()
+        # images.requires_grad = True
+        running_loss = 0
+
+        optimizer.zero_grad()
+
+        output = model(X)
+
+        loss = criterion(output, Y_target.view(1))
+
+        running_loss += loss.item()
+
+        loss.backward()
+
+        optimizer.step()
+
+        if e % 100 == 0:
+            print('Loss:', running_loss)
+    return X
+
+
+label_test = torch.tensor(2)
+X_adv = create_adversary(image_test, label_test, 0.0005, 5000)
 
 predict_class(X_adv, label_test, model)
