@@ -34,15 +34,10 @@ test_images = datasets.ImageFolder('./Images', transform=transform)
 testloader = DataLoader(test_images, batch_size=1, shuffle=True)
 
 
-# Using code from https://savan77.github.io/blog/imagenet_adv_examples.html for outputs
-
-
-# Evaluating our test sets
-
-
 image_test, label = next(iter(testloader))
 
-# plot_predictions(image_test, model, cuda=False)
+plot_predictions(image_test, model, cuda=False)
+
 
 criterion = torch.nn.CrossEntropyLoss()
 
@@ -94,8 +89,9 @@ def create_adversary(X, Y_target, lr, epochs):
     return X
 
 
-label_test = torch.tensor(10)
+# Label for pay-phone
+label_test = torch.tensor(707)
 
-X_adv = create_adversary(image_test, label_test, 0.1, 500)
+X_adv = create_adversary(image_test, label_test, 0.01, 500)
 
 plot_predictions(X_adv, model, cuda=False)

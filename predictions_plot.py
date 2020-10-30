@@ -6,32 +6,18 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
 
-class UnNormalize(object):
-    def __init__(self, mean, std):
-        self.mean = mean
-        self.std = std
+def UnNormalize(mean, std, tensor):
+    tensor_copy = tensor.clone()
+    for t, m, s in zip(tensor_copy, mean, std):
+        t.mul_(s).add_(m)
 
-    def __call__(self, tensor):
-        """
-        Args:
-            tensor (Tensor): Tensor image of size (C, H, W) to be normalized.
-        Returns:
-            Tensor: Normalized image.
-        """
-        for t, m, s in zip(tensor, self.mean, self.std):
-            t.mul_(s).add_(m)
-            # The normalize code -> t.sub_(m).div_(s)
-        return tensor
+    return tensor_copy
 
 
 def plot_predictions(X_tensor, model, cuda=True):
     """
     Take an input tensor, feed it through the model and output its predictions
     """
-
-    unorm = UnNormalize(mean=[0.485, 0.456, 0.406], std=(0.229, 0.224, 0.225))
-    # Get list of labels
-
     json_file = open('labels.json')
     labels_json = json.load(json_file)
     labels = {int(idx): label for idx, label in labels_json.items()}
@@ -51,5 +37,9 @@ def plot_predictions(X_tensor, model, cuda=True):
     plt.xticks([])
     plt.yticks([])
     plt.title('{} \n Probability {:.2f} %'.format(labels[value], pred_prob))
-    plt.imshow(unorm(X_tensor[0]).detach().cpu().permute(1, 2, 0))
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
+
+    image = UnNormalize(mean, std, X_tensor)
+    plt.imshow(image[0].detach().cpu().permute(1, 2, 0))
     plt.show()
