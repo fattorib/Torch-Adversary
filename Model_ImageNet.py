@@ -10,24 +10,24 @@ from torchvision import datasets
 from torch.utils.data import DataLoader
 from torchvision import transforms, utils
 
-from predictions_plot import plot_predictions
+from predictions_plot import plot_predictions, plot_predictions_subplot
 
 # Import model
-from torchvision.models import resnet18
+from torchvision.models import resnet34
 if torch.cuda.is_available():
     print('GPU available.')
 
 
-model = resnet18(pretrained=True)
+model = resnet34(pretrained=True)
 
 # Whatever you do, you do not want to track these gradients
 model.eval()
-# Might need to add in normalization for best results
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                          std=[0.229, 0.224, 0.225])
 ])
+
 
 test_images = datasets.ImageFolder('./Images', transform=transform)
 
@@ -35,9 +35,6 @@ testloader = DataLoader(test_images, batch_size=1, shuffle=True)
 
 
 image_test, label = next(iter(testloader))
-
-plot_predictions(image_test, model, cuda=False)
-
 
 criterion = torch.nn.CrossEntropyLoss()
 
@@ -84,7 +81,7 @@ def create_adversary(X, Y_target, lr, epochs):
 
         optimizer.step()
 
-        if e % 100 == 0:
+        if e % 1000 == 0:
             print('Loss:', running_loss)
     return X
 
@@ -92,6 +89,6 @@ def create_adversary(X, Y_target, lr, epochs):
 # Label for pay-phone
 label_test = torch.tensor(707)
 
-X_adv = create_adversary(image_test, label_test, 0.01, 500)
+X_adv = create_adversary(image_test, label_test, 0.1, 1000)
 
-plot_predictions(X_adv, model, cuda=False)
+plot_predictions_subplot(image_test, X_adv, model, cuda=True)

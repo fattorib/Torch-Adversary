@@ -34,6 +34,8 @@ def plot_predictions(X_tensor, model, cuda=True):
     label_idx = torch.max(prediction.data, 1)[1][0]
     value = label_idx.item()
 
+    fig = plt.figure()
+
     plt.xticks([])
     plt.yticks([])
     plt.title('{} \n Probability {:.2f} %'.format(labels[value], pred_prob))
@@ -42,4 +44,62 @@ def plot_predictions(X_tensor, model, cuda=True):
 
     image = UnNormalize(mean, std, X_tensor)
     plt.imshow(image[0].detach().cpu().permute(1, 2, 0))
+    return fig
+
+
+def eval_tensor(X_tensor, model, cuda):
+    json_file = open('labels.json')
+    labels_json = json.load(json_file)
+    labels = {int(idx): label for idx, label in labels_json.items()}
+
+    if cuda == True:
+        X_tensor = X_tensor.cuda()
+        model.cuda()
+
+    prediction = model(X_tensor)
+    output_probs = F.softmax(prediction, dim=1)
+    pred_prob = np.round(
+        (torch.max(output_probs.cpu().data, 1)[0][0]) * 100, 4)
+
+    label_idx = torch.max(prediction.data, 1)[1][0]
+    value = label_idx.item()
+
+    return value, pred_prob
+
+
+def plot_predictions_subplot(X_tensor_original, X_tensor_adv, model, cuda):
+    """
+    Take an input tensor, feed it through the model and output its predictions
+    """
+    json_file = open('labels.json')
+    labels_json = json.load(json_file)
+    labels = {int(idx): label for idx, label in labels_json.items()}
+
+    label_idx_original, pred_prob_original = eval_tensor(
+        X_tensor_original, model, cuda)
+
+    label_idx_adv, pred_prob_adv = eval_tensor(X_tensor_adv, model, cuda)
+
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
+    image_original = UnNormalize(mean, std, X_tensor_original)
+    image_adv = UnNormalize(mean, std, X_tensor_adv)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 3))
+
+    plt.sca(ax1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('{} \n Probability {:.2f} %'.format(
+        labels[label_idx_original], pred_prob_original))
+
+    ax1.imshow(image_original[0].detach().cpu().permute(1, 2, 0))
+
+    plt.sca(ax2)
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('{} \n Probability {:.2f} %'.format(
+        labels[label_idx_adv], pred_prob_adv))
+
+    ax2.imshow(image_adv[0].detach().cpu().permute(1, 2, 0))
     plt.show()
