@@ -23,6 +23,7 @@ model = resnet34(pretrained=True)
 
 # Whatever you do, you do not want to track these gradients
 model.eval()
+
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -34,9 +35,8 @@ test_images = datasets.ImageFolder('./Images', transform=transform)
 
 testloader = DataLoader(test_images, batch_size=3, shuffle=True)
 
-
+# Get next batch of images
 images_test, labels = next(iter(testloader))
-
 
 criterion = torch.nn.CrossEntropyLoss()
 
