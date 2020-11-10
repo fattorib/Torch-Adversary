@@ -1,9 +1,8 @@
-# Torch-Adversary
-Experimenting with Adversarial attacks as well as modifying training to account for these attacks
+# Targeted Adversarial Attacks in PyTorch
+Experimenting with [Targeted Adversarial Attacks](https://en.wikipedia.org/wiki/Adversarial_machine_learning) on ImageNet models in PyTorch. 
 
-## Done/Working
-- Adversary_generator_one.py is capable of generating noise for a targeted attack. 
+# Model 
+Attacks were performed on ResNet34. It was mainly picked as it was a good performer on ImageNet and it was small enough work with locally on an Nvdidia GTX 1070. 
 
-## To do:
-- Targeted attack with FGSM
-- Fix weird CUDA issue with tracking gradients on inputs
+# Images
+![Screenshot](https://github.com/fattorib/Torch-Adversary/blob/ImageNet/images/Out.PNG)
