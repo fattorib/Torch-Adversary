@@ -14,6 +14,7 @@ from predictions_plot import plot_predictions, plot_predictions_subplot
 
 # Import model
 from torchvision.models import resnet34
+
 if torch.cuda.is_available():
     print('GPU available.')
 
@@ -31,10 +32,10 @@ transform = transforms.Compose([
 
 test_images = datasets.ImageFolder('./Images', transform=transform)
 
-testloader = DataLoader(test_images, batch_size=1, shuffle=True)
+testloader = DataLoader(test_images, batch_size=3, shuffle=True)
 
 
-image_test, label = next(iter(testloader))
+images_test, labels = next(iter(testloader))
 
 
 criterion = torch.nn.CrossEntropyLoss()
@@ -94,7 +95,7 @@ def create_adversary(X, Y_target, lr, epochs):
 
         output = model(X)
 
-        loss = criterion(output, Y_target.view(1))
+        loss = criterion(output, Y_target.view(3))
 
         running_loss += loss.item()
 
@@ -102,14 +103,14 @@ def create_adversary(X, Y_target, lr, epochs):
 
         optimizer.step()
 
-        if e % 1000 == 0:
+        if e % 100 == 0:
             print('Loss:', running_loss)
     return X
 
 
 # Label for pay-phone
-label_test = torch.tensor(707)
+label_test = torch.tensor([707, 707, 707])
 
-X_adv = create_adversary(image_test, label_test, 0.1, 1000)
+X_adv = create_adversary(images_test, label_test, 0.1, 1000)
 
-plot_predictions_subplot(image_test, X_adv, model, cuda=True)
+plot_predictions_subplot(images_test, X_adv, model, cuda=True)

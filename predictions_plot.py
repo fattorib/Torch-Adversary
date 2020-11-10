@@ -57,6 +57,7 @@ def eval_tensor(X_tensor, model, cuda):
         model.cuda()
 
     prediction = model(X_tensor)
+
     output_probs = F.softmax(prediction, dim=1)
     pred_prob = np.round(
         (torch.max(output_probs.cpu().data, 1)[0][0]) * 100, 4)
@@ -76,30 +77,76 @@ def plot_predictions_subplot(X_tensor_original, X_tensor_adv, model, cuda):
     labels = {int(idx): label for idx, label in labels_json.items()}
 
     label_idx_original, pred_prob_original = eval_tensor(
-        X_tensor_original, model, cuda)
+        X_tensor_original[0].unsqueeze(0), model, cuda)
 
-    label_idx_adv, pred_prob_adv = eval_tensor(X_tensor_adv, model, cuda)
+    label_idx_adv, pred_prob_adv = eval_tensor(
+        X_tensor_adv[0].unsqueeze(0), model, cuda)
 
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
     image_original = UnNormalize(mean, std, X_tensor_original)
     image_adv = UnNormalize(mean, std, X_tensor_adv)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 3))
+    fig, axs = plt.subplots(3, 2, figsize=(10, 10))
 
-    plt.sca(ax1)
+    plt.sca(axs[0, 0])
     plt.xticks([])
     plt.yticks([])
     plt.title('{} \n Probability {:.2f} %'.format(
         labels[label_idx_original], pred_prob_original))
 
-    ax1.imshow(image_original[0].detach().cpu().permute(1, 2, 0))
+    plt.imshow(image_original[0].detach().cpu().permute(1, 2, 0))
 
-    plt.sca(ax2)
+    plt.sca(axs[0, 1])
     plt.xticks([])
     plt.yticks([])
     plt.title('{} \n Probability {:.2f} %'.format(
         labels[label_idx_adv], pred_prob_adv))
 
-    ax2.imshow(image_adv[0].detach().cpu().permute(1, 2, 0))
+    plt.imshow(image_adv[0].detach().cpu().permute(1, 2, 0))
+
+    label_idx_original, pred_prob_original = eval_tensor(
+        X_tensor_original[1].unsqueeze(0), model, cuda)
+
+    label_idx_adv, pred_prob_adv = eval_tensor(
+        X_tensor_adv[1].unsqueeze(0), model, cuda)
+
+    plt.sca(axs[1, 0])
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('{} \n Probability {:.2f} %'.format(
+        labels[label_idx_original], pred_prob_original))
+
+    plt.imshow(image_original[1].detach().cpu().permute(1, 2, 0))
+
+    plt.sca(axs[1, 1])
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('{} \n Probability {:.2f} %'.format(
+        labels[label_idx_adv], pred_prob_adv))
+
+    plt.imshow(image_adv[1].detach().cpu().permute(1, 2, 0))
+
+    label_idx_original, pred_prob_original = eval_tensor(
+        X_tensor_original[2].unsqueeze(0), model, cuda)
+
+    label_idx_adv, pred_prob_adv = eval_tensor(
+        X_tensor_adv[2].unsqueeze(0), model, cuda)
+
+    plt.sca(axs[2, 0])
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('{} \n Probability {:.2f} %'.format(
+        labels[label_idx_original], pred_prob_original))
+
+    plt.imshow(image_original[2].detach().cpu().permute(1, 2, 0))
+
+    plt.sca(axs[2, 1])
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('{} \n Probability {:.2f} %'.format(
+        labels[label_idx_adv], pred_prob_adv))
+
+    plt.imshow(image_adv[2].detach().cpu().permute(1, 2, 0))
+
     plt.show()
