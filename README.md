@@ -10,7 +10,8 @@ Two methods are implemented:
 - Targeted: Performing gradient descent on loss function between image and desired class. Implemented in ```create_adversary```
 
 # Images
+The 5 test images were all found from the ImageNet website and downloaded from their respective links. 
 
 # Output
-Applying a targeted attack with label 707: Pay-Phone, Pay-Station. ```create_adversary``` a learning rate of 0.1 and the images were "trained" over 1000 epochs. 
+Applying a targeted attack with label 707: Pay-Phone, Pay-Station. ```create_adversary``` was used with a learning rate of 0.1 and 1000 epochs. 
 ![Screenshot](https://github.com/fattorib/Torch-Adversary/blob/ImageNet/images/Out.PNG)
