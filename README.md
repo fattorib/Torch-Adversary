@@ -24,4 +24,4 @@ The 5 test images were all found from the ImageNet website and downloaded from t
 # Output
 Applying a targeted attack with label 707: Pay-Phone, Pay-Station. ```create_adversary``` was used with a learning rate of 0.1 and 1000 epochs. 
 
-![Screenshot](https://github.com/fattorib/Torch-Adversary/blob/ImageNet/images/Out.PNG)
+![Screenshot](https://github.com/fattorib/Torch-Adversary/blob/main/images/Out.PNG)
