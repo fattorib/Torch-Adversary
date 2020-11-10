@@ -36,11 +36,23 @@ testloader = DataLoader(test_images, batch_size=1, shuffle=True)
 
 image_test, label = next(iter(testloader))
 
+
 criterion = torch.nn.CrossEntropyLoss()
 
 
 def create_FGSM(X, Y, epsilon):
+    """
+    Implementation of a Fast Gradient Sign Attack. 
 
+    X is input image
+
+    Y is image label
+
+    epsilon is controls the amount of gradient noise added to the image
+
+    Returns Adversarial Image as well as Gradient Image
+
+    """
     X.requires_grad = True
 
     model.zero_grad()
@@ -56,6 +68,15 @@ def create_FGSM(X, Y, epsilon):
 
 
 def create_adversary(X, Y_target, lr, epochs):
+    """
+    X is input Image
+    Y_target is the target label
+    lr is learning rate
+    epochs is the number of epochs to "train" the image for
+
+    Returns the adversarial image
+
+    """
 
     X = X.cuda()
     Y_target = Y_target.cuda()
